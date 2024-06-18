@@ -77,7 +77,7 @@ public struct Keychain {
         do {
             let prefs = try initializePreferences()
             let editor = prefs.edit()
-            editor.putString(string, key)
+            editor.putString(key, string)
             editor.apply()
         } catch {
             throw KeychainError(message: error.localizedDescription)
