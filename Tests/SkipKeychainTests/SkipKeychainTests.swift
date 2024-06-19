@@ -3,6 +3,8 @@ import OSLog
 import Foundation
 @testable import SkipKeychain
 
+let logger: Logger = Logger(subsystem: "test", category: "SkipKeychainTests")
+
 // SKIP INSERT: @org.junit.runner.RunWith(androidx.test.ext.junit.runners.AndroidJUnit4::class)
 final class SkipKeychainTests: XCTestCase {
     let key = "SkipKeychainTestsKey"
@@ -11,7 +13,12 @@ final class SkipKeychainTests: XCTestCase {
         guard !isRobolectric else {
             return
         }
-        try? Keychain.shared.removeValue(forKey: key)
+
+        do {
+            try Keychain.shared.removeValue(forKey: key)
+        } catch {
+            logger.error("error removing value for key in Keychain: \(error)")
+        }
     }
 
     func testString() throws {
