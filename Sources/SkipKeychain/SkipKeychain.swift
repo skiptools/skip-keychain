@@ -42,7 +42,7 @@ public struct Keychain {
         #endif
     }
 
-    /// Retrieve a value.
+    /// Retrieve a value, attempting to parse the internal string as an int.
     public func int(forKey key: String) throws -> Int? {
         guard let string = try string(forKey: key) else {
             return nil
@@ -50,7 +50,7 @@ public struct Keychain {
         return Int(string)
     }
 
-    /// Retrieve a value.
+    /// Retrieve a value, atempting to parse the internal string as a double.
     public func double(forKey key: String) throws -> Double? {
         guard let string = try string(forKey: key) else {
             return nil
@@ -58,7 +58,7 @@ public struct Keychain {
         return Double(string)
     }
 
-    /// Retrieve a value.
+    /// Retrieve a value, interpresting an internal string value of "true" or "YES" as true and any other non-nil value as false.
     public func bool(forKey key: String) throws -> Bool? {
         guard let string = try string(forKey: key) else {
             return nil
@@ -85,17 +85,17 @@ public struct Keychain {
         #endif
     }
 
-    /// Store a key value pair.
+    /// Store a key value pair. The given int will be stored using its string representation.
     public func set(_ value: Int, forKey key: String, access: KeychainAccess = .unlocked) throws {
         try set(value.description, forKey: key, access: access)
     }
 
-    /// Store a key value pair.
+    /// Store a key value pair. The given double will be stored using its string representation.
     public func set(_ value: Double, forKey key: String, access: KeychainAccess = .unlocked) throws {
         try set(value.description, forKey: key, access: access)
     }
 
-    /// Store a key value pair.
+    /// Store a key value pair. The given bool will be stored as the string 'true' or 'false'.
     public func set(_ value: Bool, forKey key: String, access: KeychainAccess = .unlocked) throws {
         try set(value ? "true" : "false", forKey: key, access: access)
     }
@@ -179,9 +179,14 @@ public struct Keychain {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key
         ]
-        let code = SecItemDelete(query as CFDictionary)
-        guard code == errSecSuccess || code == errSecItemNotFound else {
-            throw KeychainError(code: code)
+        // We've seen cases where attempts fail with errSecItemNotFound
+        for _ in 0..<5 {
+            let code = SecItemDelete(query as CFDictionary)
+            if code == errSecSuccess {
+                return
+            } else if code != errSecItemNotFound {
+                throw KeychainError(code: code)
+            }
         }
     }
     #endif
