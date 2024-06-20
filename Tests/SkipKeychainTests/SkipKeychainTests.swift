@@ -9,21 +9,10 @@ let logger: Logger = Logger(subsystem: "test", category: "SkipKeychainTests")
 final class SkipKeychainTests: XCTestCase {
     let key = "SkipKeychainTestsKey"
 
-    override func setUp() {
-        guard !isRobolectric else {
-            return
-        }
-
-        do {
-            try Keychain.shared.removeValue(forKey: key)
-        } catch {
-            logger.error("error removing value for key in Keychain: \(error)")
-        }
-    }
-
     func testString() throws {
         try skipRoboelectric()
         let keychain = Keychain.shared
+        try keychain.removeValue(forKey: key)
         try XCTAssertNil(keychain.string(forKey: key))
         try keychain.set("value", forKey: key)
         try XCTAssertEqual(keychain.string(forKey: key), "value")
@@ -32,6 +21,7 @@ final class SkipKeychainTests: XCTestCase {
     func testUpdate() throws {
         try skipRoboelectric()
         let keychain = Keychain.shared
+        try keychain.removeValue(forKey: key)
         try keychain.set("value", forKey: key)
         try XCTAssertEqual(keychain.string(forKey: key), "value")
         try keychain.set("value2", forKey: key)
@@ -41,6 +31,7 @@ final class SkipKeychainTests: XCTestCase {
     func testRemoveValueForKey() throws {
         try skipRoboelectric()
         let keychain = Keychain.shared
+        try keychain.removeValue(forKey: key)
         try keychain.removeValue(forKey: "nonexistantkey")
         try keychain.set("value", forKey: key)
         try XCTAssertEqual(keychain.string(forKey: key), "value")
@@ -51,6 +42,7 @@ final class SkipKeychainTests: XCTestCase {
     func testKeys() throws {
         try skipRoboelectric()
         let keychain = Keychain.shared
+        try keychain.removeValue(forKey: key)
         try XCTAssertFalse(keychain.keys.contains(key))
         try keychain.set("value", forKey: key)
         try XCTAssertTrue(keychain.keys.contains(key))
@@ -59,6 +51,7 @@ final class SkipKeychainTests: XCTestCase {
     func testBool() throws {
         try skipRoboelectric()
         let keychain = Keychain.shared
+        try keychain.removeValue(forKey: key)
         try XCTAssertNil(keychain.bool(forKey: key))
         try keychain.set(true, forKey: key)
         try XCTAssertEqual(keychain.bool(forKey: key), true)
@@ -69,6 +62,7 @@ final class SkipKeychainTests: XCTestCase {
     func testInt() throws {
         try skipRoboelectric()
         let keychain = Keychain.shared
+        try keychain.removeValue(forKey: key)
         try XCTAssertNil(keychain.int(forKey: key))
         try keychain.set(100, forKey: key)
         try XCTAssertEqual(keychain.int(forKey: key), 100)
@@ -77,6 +71,7 @@ final class SkipKeychainTests: XCTestCase {
     func testDouble() throws {
         try skipRoboelectric()
         let keychain = Keychain.shared
+        try keychain.removeValue(forKey: key)
         try XCTAssertNil(keychain.double(forKey: key))
         try keychain.set(99.5, forKey: key)
         try XCTAssertEqual(keychain.double(forKey: key), 99.5)

@@ -125,7 +125,6 @@ public struct Keychain {
         lock.lock()
         defer { lock.unlock() }
 
-        // Attempt to delete and re-add as the safest mechanism
         try removeHoldingLock(forKey: key)
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -133,23 +132,9 @@ public struct Keychain {
             kSecValueData as String: data,
             kSecAttrAccessible as String: access.value
         ]
-        let addCode = SecItemAdd(query as CFDictionary, nil)
-        guard addCode != errSecSuccess else {
-            return
-        }
-
-        // Attempt an update to work around cases we've seen where the delete fails for some reason
-        let existingItemQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key
-        ]
-        let updateAttributes: [String: Any] = [
-            kSecValueData as String: data,
-            kSecAttrAccessible as String: access.value
-        ]
-        let updateCode = SecItemUpdate(existingItemQuery as CFDictionary, updateAttributes as CFDictionary)
-        guard updateCode == errSecSuccess else {
-            throw KeychainError(code: updateCode)
+        let code = SecItemAdd(query as CFDictionary, nil)
+        guard code == errSecSuccess else {
+            throw KeychainError(code: code)
         }
     }
     #else
