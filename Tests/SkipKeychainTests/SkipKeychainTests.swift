@@ -29,6 +29,15 @@ final class SkipKeychainTests: XCTestCase {
         try XCTAssertEqual(keychain.string(forKey: key), "value")
     }
 
+    func testUpdate() throws {
+        try skipRoboelectric()
+        let keychain = Keychain.shared
+        try keychain.set("value", forKey: key)
+        try XCTAssertEqual(keychain.string(forKey: key), "value")
+        try keychain.set("value2", forKey: key)
+        try XCTAssertEqual(keychain.string(forKey: key), "value2")
+    }
+
     func testRemoveValueForKey() throws {
         try skipRoboelectric()
         let keychain = Keychain.shared
