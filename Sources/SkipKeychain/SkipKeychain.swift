@@ -149,8 +149,7 @@ public struct Keychain {
         ]
         let updateCode = SecItemUpdate(existingItemQuery as CFDictionary, updateAttributes as CFDictionary)
         guard updateCode == errSecSuccess else {
-            // Throw the original add error
-            throw KeychainError(code: addCode)
+            throw KeychainError(code: updateCode)
         }
     }
     #else
