@@ -11,6 +11,7 @@ final class SkipKeychainTests: XCTestCase {
     func testString() throws {
         let key = "SkipKeychainTestsStringKey"
         try skipRoboelectric()
+        try skipiOSSimulator()
         let keychain = Keychain.shared
         try keychain.removeValue(forKey: key)
         try XCTAssertNil(keychain.string(forKey: key))
@@ -21,6 +22,7 @@ final class SkipKeychainTests: XCTestCase {
     func testUpdate() throws {
         let key = "SkipKeychainTestsUpdateKey"
         try skipRoboelectric()
+        try skipiOSSimulator()
         let keychain = Keychain.shared
         try keychain.removeValue(forKey: key)
         try keychain.set("value", forKey: key)
@@ -32,6 +34,7 @@ final class SkipKeychainTests: XCTestCase {
     func testRemoveValueForKey() throws {
         let key = "SkipKeychainTestsValueForKey"
         try skipRoboelectric()
+        try skipiOSSimulator()
         let keychain = Keychain.shared
         try keychain.removeValue(forKey: key)
         try keychain.removeValue(forKey: "nonexistantkey")
@@ -44,6 +47,7 @@ final class SkipKeychainTests: XCTestCase {
     func testKeys() throws {
         let key = "SkipKeychainTestsKey"
         try skipRoboelectric()
+        try skipiOSSimulator()
         let keychain = Keychain.shared
         try keychain.removeValue(forKey: key)
         try XCTAssertFalse(keychain.keys.contains(key))
@@ -54,6 +58,7 @@ final class SkipKeychainTests: XCTestCase {
     func testBool() throws {
         let key = "SkipKeychainTestsBoolKey"
         try skipRoboelectric()
+        try skipiOSSimulator()
         let keychain = Keychain.shared
         try keychain.removeValue(forKey: key)
         try XCTAssertNil(keychain.bool(forKey: key))
@@ -66,6 +71,7 @@ final class SkipKeychainTests: XCTestCase {
     func testInt() throws {
         let key = "SkipKeychainTestsIntKey"
         try skipRoboelectric()
+        try skipiOSSimulator()
         let keychain = Keychain.shared
         try keychain.removeValue(forKey: key)
         try XCTAssertNil(keychain.int(forKey: key))
@@ -76,6 +82,7 @@ final class SkipKeychainTests: XCTestCase {
     func testDouble() throws {
         let key = "SkipKeychainTestsDoubleKey"
         try skipRoboelectric()
+        try skipiOSSimulator()
         let keychain = Keychain.shared
         try keychain.removeValue(forKey: key)
         try XCTAssertNil(keychain.double(forKey: key))
@@ -87,5 +94,13 @@ final class SkipKeychainTests: XCTestCase {
         if isRobolectric {
             throw XCTSkip("Roboelectric does not support AndroidKeyStore")
         }
+    }
+
+    private func skipiOSSimulator() throws {
+        // e.g.: [SkipKeychainTests.SkipKeychainTests testUpdate] : failed: caught error: "A required entitlement isn't present."
+        // we would need to somehow add the entitlement to the test case runner
+        #if targetEnvironment(simulator)
+            throw XCTSkip("Simulator tests cannot be run without entitlement")
+        #endif
     }
 }
