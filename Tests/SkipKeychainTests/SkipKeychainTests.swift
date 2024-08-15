@@ -7,9 +7,9 @@ let logger: Logger = Logger(subsystem: "test", category: "SkipKeychainTests")
 
 // SKIP INSERT: @org.junit.runner.RunWith(androidx.test.ext.junit.runners.AndroidJUnit4::class)
 final class SkipKeychainTests: XCTestCase {
-    let key = "SkipKeychainTestsKey"
 
     func testString() throws {
+        let key = "SkipKeychainTestsStringKey"
         try skipRoboelectric()
         let keychain = Keychain.shared
         try keychain.removeValue(forKey: key)
@@ -19,6 +19,7 @@ final class SkipKeychainTests: XCTestCase {
     }
 
     func testUpdate() throws {
+        let key = "SkipKeychainTestsUpdateKey"
         try skipRoboelectric()
         let keychain = Keychain.shared
         try keychain.removeValue(forKey: key)
@@ -29,6 +30,7 @@ final class SkipKeychainTests: XCTestCase {
     }
 
     func testRemoveValueForKey() throws {
+        let key = "SkipKeychainTestsValueForKey"
         try skipRoboelectric()
         let keychain = Keychain.shared
         try keychain.removeValue(forKey: key)
@@ -40,6 +42,7 @@ final class SkipKeychainTests: XCTestCase {
     }
 
     func testKeys() throws {
+        let key = "SkipKeychainTestsKey"
         try skipRoboelectric()
         let keychain = Keychain.shared
         try keychain.removeValue(forKey: key)
@@ -49,6 +52,7 @@ final class SkipKeychainTests: XCTestCase {
     }
 
     func testBool() throws {
+        let key = "SkipKeychainTestsBoolKey"
         try skipRoboelectric()
         let keychain = Keychain.shared
         try keychain.removeValue(forKey: key)
@@ -60,6 +64,7 @@ final class SkipKeychainTests: XCTestCase {
     }
 
     func testInt() throws {
+        let key = "SkipKeychainTestsIntKey"
         try skipRoboelectric()
         let keychain = Keychain.shared
         try keychain.removeValue(forKey: key)
@@ -69,6 +74,7 @@ final class SkipKeychainTests: XCTestCase {
     }
 
     func testDouble() throws {
+        let key = "SkipKeychainTestsDoubleKey"
         try skipRoboelectric()
         let keychain = Keychain.shared
         try keychain.removeValue(forKey: key)
