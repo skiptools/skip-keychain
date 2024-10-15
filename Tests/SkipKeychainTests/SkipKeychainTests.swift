@@ -5,7 +5,6 @@ import Foundation
 
 let logger: Logger = Logger(subsystem: "test", category: "SkipKeychainTests")
 
-// SKIP INSERT: @org.junit.runner.RunWith(androidx.test.ext.junit.runners.AndroidJUnit4::class)
 final class SkipKeychainTests: XCTestCase {
 
     func testString() throws {
