@@ -49,9 +49,9 @@ final class SkipKeychainTests: XCTestCase {
         try skipiOSSimulator()
         let keychain = Keychain.shared
         try keychain.removeValue(forKey: key)
-        try XCTAssertFalse(keychain.keys.contains(key))
+        try XCTAssertFalse(keychain.keys().contains(key))
         try keychain.set("value", forKey: key)
-        try XCTAssertTrue(keychain.keys.contains(key))
+        try XCTAssertTrue(keychain.keys().contains(key))
     }
 
     func testBool() throws {
