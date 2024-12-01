@@ -15,8 +15,8 @@ let package = Package(
         .library(name: "SkipKeychain", targets: ["SkipKeychain"]),
     ],
     dependencies: [
-        .package(url: "https://source.skip.tools/skip.git", from: "1.0.4"),
-        .package(url: "https://source.skip.tools/skip-foundation.git", from: "1.0.0")
+        .package(url: "https://source.skip.tools/skip.git", from: "1.2.1"),
+        .package(url: "https://source.skip.tools/skip-foundation.git", from: "1.2.0")
     ],
     targets: [
         .target(name: "SkipKeychain", dependencies: [.product(name: "SkipFoundation", package: "skip-foundation")], plugins: [.plugin(name: "skipstone", package: "skip")]),
