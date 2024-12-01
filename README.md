@@ -2,6 +2,21 @@
 
 This is a [Skip](https://skip.tools) Swift/Kotlin library project providing a simple unified API to secure key/value storage. It uses the Keychain on Darwin platforms and EncyptedSharedPreferences on Android.
 
+
+## Usage
+
+```swift
+import SkipKeychain
+
+let keychain = Keychain.shared
+
+try keychain.set("value", forKey: "key")
+assert(keychain.string(forKey: "key") == "value")
+
+try keychain.removeValue(forKey: "key")
+assert(keychain.string(forKey: "key") == nil)
+```
+
 ## Building
 
 This project is a Swift Package Manager module that uses the
