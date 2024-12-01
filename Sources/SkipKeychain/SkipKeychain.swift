@@ -3,6 +3,7 @@
 // This is free software: you can redistribute and/or modify it
 // under the terms of the GNU Lesser General Public License 3.0
 // as published by the Free Software Foundation https://fsf.org
+#if !SKIP_BRIDGE
 import Foundation
 #if !SKIP
 import Security
@@ -187,8 +188,7 @@ public struct Keychain {
     #endif
 
     /// Return the set of all stored keys.
-    public var keys: [String] {
-        get throws {
+    public func keys() throws -> [String] {
             #if !SKIP
             lock.lock()
             defer { lock.unlock() }
@@ -213,7 +213,6 @@ public struct Keychain {
             #else
             return Array(initializePreferences().getAll().keys)
             #endif
-        }
     }
 
     /// Remove all stored key value pairs.
@@ -292,3 +291,4 @@ public struct KeychainError: Error, CustomStringConvertible {
         return message
     }
 }
+#endif
