@@ -151,7 +151,18 @@ public struct Keychain {
 
         let context = ProcessInfo.processInfo.androidContext
         let alias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-        preferences = EncryptedSharedPreferences.create("tools.skip.SkipKeychain", alias, context, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+        let fileName = "tools.skip.SkipKeychain" // DO NOT CHANGE: Users may specify this name in their Android backup rules
+        let factory: () -> SharedPreferences = {
+            EncryptedSharedPreferences.create(fileName, alias, context, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+        }
+        do {
+            preferences = factory()
+        } catch is javax.crypto.AEADBadTagException {
+            // Likely caused by restoring a backup where the key is no longer available: https://github.com/tink-crypto/tink-java/issues/23
+            // Delete the old file and try again
+            do { context.deleteSharedPreferences(fileName) } catch {}
+            preferences = factory()
+        }
         return preferences!
     }
     #endif
@@ -189,30 +200,34 @@ public struct Keychain {
 
     /// Return the set of all stored keys.
     public func keys() throws -> [String] {
-            #if !SKIP
-            lock.lock()
-            defer { lock.unlock() }
+        #if !SKIP
+        lock.lock()
+        defer { lock.unlock() }
 
-            let query: [String: Any] = [
-                kSecClass as String: kSecClassGenericPassword,
-                kSecReturnAttributes as String: true,
-                kSecReturnRef as String: true,
-                kSecMatchLimit as String: kSecMatchLimitAll,
-            ]
-            var result: AnyObject?
-            let code = withUnsafeMutablePointer(to: &result) {
-                SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer($0))
-            }
-            guard code == errSecSuccess || code == errSecItemNotFound else {
-                throw KeychainError(code: code)
-            }
-            guard let dicts = result as? [[String: Any]] else {
-                return []
-            }
-            return dicts.compactMap { $0[kSecAttrAccount as String] as? String }
-            #else
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecReturnAttributes as String: true,
+            kSecReturnRef as String: true,
+            kSecMatchLimit as String: kSecMatchLimitAll,
+        ]
+        var result: AnyObject?
+        let code = withUnsafeMutablePointer(to: &result) {
+            SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer($0))
+        }
+        guard code == errSecSuccess || code == errSecItemNotFound else {
+            throw KeychainError(code: code)
+        }
+        guard let dicts = result as? [[String: Any]] else {
+            return []
+        }
+        return dicts.compactMap { $0[kSecAttrAccount as String] as? String }
+        #else
+        do {
             return Array(initializePreferences().getAll().keys)
-            #endif
+        } catch {
+            throw KeychainError(message: error.localizedDescription)
+        }
+        #endif
     }
 
     /// Remove all stored key value pairs.
