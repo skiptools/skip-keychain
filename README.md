@@ -18,7 +18,16 @@ assert(keychain.string(forKey: "key") == nil)
 
 ## Backups
 
-Google recommends excluding encrypted shared preference files from backups to prevent restoring an encrypted file whose encryption key is lost. Follow the instructions [here](https://developer.android.com/identity/data/autobackup#include-exclude-android-12) to create backup rules for your app. Your rules should contain the following to exclude the SkipKeychain shared preferences file:
+Google recommends excluding encrypted shared preference files from backups to prevent restoring an encrypted file whose encryption key is lost. If your app targets devices running Android 11 or lower, follow the instructions [here](https://developer.android.com/identity/data/autobackup#include-exclude-android-11) to create backup rules for your app and reference them from your `AndroidManifest.xml`. Your rules file should exclude SkipKeychain's shared preferences, like so:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <exclude domain="sharedpref" path="tools.skip.SkipKeychain.xml"/>
+</full-backup-content>
+```
+
+For newer devices, follow [these instructions](https://developer.android.com/identity/data/autobackup#include-exclude-android-12) in addition to the steps above for older devices. Your additional rules file should contain the fllowing:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
