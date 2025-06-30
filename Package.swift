@@ -5,7 +5,6 @@
 // Swift Package, Sources, and Tests into an
 // Android Gradle Project with Kotlin sources and JUnit tests.
 import PackageDescription
-import Foundation
 
 let package = Package(
     name: "skip-keychain",
@@ -24,7 +23,7 @@ let package = Package(
     ]
 )
 
-if ProcessInfo.processInfo.environment["SKIP_BRIDGE"] ?? "0" != "0" {
+if Context.environment["SKIP_BRIDGE"] ?? "0" != "0" {
     package.dependencies += [.package(url: "https://source.skip.tools/skip-bridge.git", "0.0.0"..<"2.0.0")]
     package.targets.forEach({ target in
         target.dependencies += [.product(name: "SkipBridge", package: "skip-bridge")]
