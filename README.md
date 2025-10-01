@@ -9,6 +9,28 @@ This is a [Skip](https://skip.tools) Swift/Kotlin library project providing a si
 </video>
 </div>
 
+## Setup
+
+To include this framework in your project, add the following
+dependency to your `Package.swift` file:
+
+```swift
+let package = Package(
+    name: "my-package",
+    products: [
+        .library(name: "MyProduct", targets: ["MyTarget"]),
+    ],
+    dependencies: [
+        .package(url: "https://source.skip.tools/skip-keychain.git", "0.0.0"..<"2.0.0"),
+    ],
+    targets: [
+        .target(name: "MyTarget", dependencies: [
+            .product(name: "SkipKeychain", package: "skip-keychain")
+        ])
+    ]
+)
+```
+
 ## Usage
 
 ```swift
