@@ -1,6 +1,13 @@
 # SkipKeychain
 
-This is a [Skip](https://skip.tools) Swift/Kotlin library project providing a simple unified API to secure key/value storage. It uses the Keychain on Darwin platforms and EncyptedSharedPreferences on Android.
+This is a [Skip](https://skip.tools) Swift/Kotlin library project providing a simple unified API to secure key/value storage. It uses the Keychain on Darwin platforms and `EncyptedSharedPreferences` on Android.
+
+<div align="center">
+<video id="intro_video" style="height: 500px;" autoplay muted loop playsinline>
+  <source style="width: 100;" src="https://assets.skip.tools/videos/skip-keychain.mov" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+</div>
 
 ## Usage
 
