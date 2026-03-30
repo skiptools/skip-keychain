@@ -1,9 +1,4 @@
 // swift-tools-version: 5.9
-// This is a Skip (https://skip.dev) package,
-// containing a Swift Package Manager project
-// that will use the Skip build plugin to transpile the
-// Swift Package, Sources, and Tests into an
-// Android Gradle Project with Kotlin sources and JUnit tests.
 import PackageDescription
 
 let package = Package(
