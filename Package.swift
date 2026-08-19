@@ -9,8 +9,8 @@ let package = Package(
         .library(name: "SkipKeychain", targets: ["SkipKeychain"]),
     ],
     dependencies: [
-        .package(url: "https://source.skip.tools/skip.git", from: "1.6.30"),
-        .package(url: "https://source.skip.tools/skip-foundation.git", from: "1.3.9")
+        .package(url: "https://github.com/skiptools/skip.git", from: "1.9.6"),
+        .package(url: "https://github.com/skiptools/skip-foundation.git", from: "1.4.3")
     ],
     targets: [
         .target(name: "SkipKeychain", dependencies: [.product(name: "SkipFoundation", package: "skip-foundation")], plugins: [.plugin(name: "skipstone", package: "skip")]),
@@ -19,7 +19,7 @@ let package = Package(
 )
 
 if Context.environment["SKIP_BRIDGE"] ?? "0" != "0" {
-    package.dependencies += [.package(url: "https://source.skip.tools/skip-bridge.git", "0.0.0"..<"2.0.0")]
+    package.dependencies += [.package(url: "https://github.com/skiptools/skip-bridge.git", "0.0.0"..<"2.0.0")]
     package.targets.forEach({ target in
         target.dependencies += [.product(name: "SkipBridge", package: "skip-bridge")]
     })
