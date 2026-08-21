@@ -3,7 +3,11 @@
 #if !SKIP_BRIDGE
 import Foundation
 #if !SKIP
+// Platforms without the Security framework (e.g. the Linux host pass of
+// `skip export`) compile a throwing stub so the package can build there.
+#if canImport(Security)
 import Security
+#endif
 #else
 import android.content.Context
 import android.content.SharedPreferences
@@ -23,6 +27,7 @@ public struct Keychain {
     /// Retrieve a value.
     public func string(forKey key: String) throws -> String? {
         #if !SKIP
+        #if canImport(Security)
         guard let data = try data(forKey: key) else {
             return nil
         }
@@ -30,6 +35,9 @@ public struct Keychain {
             throw KeychainError(invalidValue: true)
         }
         return string
+        #else
+        throw KeychainError(message: "Keychain is not supported on this platform")
+        #endif
         #else
         do {
             let prefs = try initializePreferences()
@@ -67,10 +75,14 @@ public struct Keychain {
     /// Store a key value pair.
     public func set(_ string: String, forKey key: String, access: KeychainAccess = .unlocked) throws {
         #if !SKIP
+        #if canImport(Security)
         guard let data = string.data(using: .utf8) else {
             throw KeychainError(invalidValue: true)
         }
         try set(data, forKey: key, access: access)
+        #else
+        throw KeychainError(message: "Keychain is not supported on this platform")
+        #endif
         #else
         do {
             let prefs = try initializePreferences()
@@ -99,6 +111,7 @@ public struct Keychain {
     }
 
     #if !SKIP
+    #if canImport(Security)
     private func data(forKey key: String) throws -> Data? {
         lock.lock()
         defer { lock.unlock() }
@@ -135,6 +148,7 @@ public struct Keychain {
             throw KeychainError(code: code)
         }
     }
+    #endif
     #else
     private var preferences: SharedPreferences?
 
@@ -167,9 +181,13 @@ public struct Keychain {
     /// Delete the value stored for the given key.
     public func removeValue(forKey key: String) throws {
         #if !SKIP
+        #if canImport(Security)
         lock.lock()
         defer { lock.unlock() }
         try removeHoldingLock(forKey: key)
+        #else
+        throw KeychainError(message: "Keychain is not supported on this platform")
+        #endif
         #else
         do {
             let prefs = try initializePreferences()
@@ -183,6 +201,7 @@ public struct Keychain {
     }
 
     #if !SKIP
+    #if canImport(Security)
     private func removeHoldingLock(forKey key: String) throws {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -194,10 +213,12 @@ public struct Keychain {
         }
     }
     #endif
+    #endif
 
     /// Return the set of all stored keys.
     public func keys() throws -> [String] {
         #if !SKIP
+        #if canImport(Security)
         lock.lock()
         defer { lock.unlock() }
 
@@ -219,6 +240,9 @@ public struct Keychain {
         }
         return dicts.compactMap { $0[kSecAttrAccount as String] as? String }
         #else
+        throw KeychainError(message: "Keychain is not supported on this platform")
+        #endif
+        #else
         do {
             return Array(initializePreferences().getAll().keys)
         } catch {
@@ -230,6 +254,7 @@ public struct Keychain {
     /// Remove all stored key value pairs.
     public func removeAll() throws {
         #if !SKIP
+        #if canImport(Security)
         lock.lock()
         defer { lock.unlock() }
 
@@ -238,6 +263,9 @@ public struct Keychain {
         guard code == errSecSuccess || code == errSecItemNotFound else {
             throw KeychainError(code: code)
         }
+        #else
+        throw KeychainError(message: "Keychain is not supported on this platform")
+        #endif
         #else
         do {
             let editor = initializePreferences().edit()
@@ -264,6 +292,7 @@ public enum KeychainAccess {
     case passcodeSetThisDeviceOnly
 
     #if !SKIP
+    #if canImport(Security)
     var value: String {
         switch self {
         case .unlocked:
@@ -278,6 +307,7 @@ public enum KeychainAccess {
             return kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly as String
         }
     }
+    #endif
     #endif
 }
 
@@ -294,9 +324,11 @@ public struct KeychainError: Error, CustomStringConvertible {
     }
 
     #if !SKIP
+    #if canImport(Security)
     init(code: OSStatus) {
         self.message = SecCopyErrorMessageString(code, nil) as? String ?? "Unknown error"
     }
+    #endif
     #endif
 
     public var description: String {
